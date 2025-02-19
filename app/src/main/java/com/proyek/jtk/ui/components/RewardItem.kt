@@ -1,5 +1,6 @@
 package com.proyek.jtk.ui.components
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -15,28 +16,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.proyek.jtk.R
 import com.proyek.jtk.ui.theme.JTKTheme
 import com.proyek.jtk.ui.theme.Shapes
 
 @Composable
 fun RewardItem(
-    image: Int,
+    imageUri: Uri?, // Menggunakan URI untuk gambar
     title: String,
     requiredPoint: Int,
+    description: String, // Menambahkan deskripsi
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
     ) {
-        Image(
-            painter = painterResource(image),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(170.dp)
-                .clip(Shapes.medium)
-        )
+        // Menggunakan rememberImagePainter untuk memuat gambar dari URI
+        imageUri?.let {
+            Image(
+                painter = rememberImagePainter(it),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(170.dp)
+                    .clip(Shapes.medium)
+            )
+        } ?: run {
+            // Jika imageUri null, gunakan gambar default
+            Image(
+                painter = painterResource(R.drawable.reward_13), // Gambar default
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(170.dp)
+                    .clip(Shapes.medium)
+            )
+        }
+
         Text(
             text = title,
             maxLines = 2,
@@ -46,9 +63,14 @@ fun RewardItem(
             )
         )
         Text(
-            text = stringResource(R.string.required_point, requiredPoint),
+            text = "Points: $requiredPoint", // Menambahkan format untuk points
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.secondary
+        )
+        Text(
+            text = description, // Menampilkan deskripsi
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -57,6 +79,11 @@ fun RewardItem(
 @Preview(showBackground = true)
 fun RewardItemPreview() {
     JTKTheme {
-        RewardItem(R.drawable.reward_13, "Sepeda Anak", 4000)
+        RewardItem(
+            imageUri = Uri.parse("https://www.example.com/image.jpg"), // Contoh image URI
+            title = "Sepeda Anak",
+            requiredPoint = 4000,
+            description = "Ini adalah sepeda untuk anak-anak, sangat menyenangkan untuk bermain!"
+        )
     }
 }

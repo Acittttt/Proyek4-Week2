@@ -2,6 +2,7 @@ package com.proyek.jtk.data
 
 import com.proyek.jtk.model.FakeRewardDataSource
 import com.proyek.jtk.model.OrderReward
+import com.proyek.jtk.model.Reward
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,10 @@ class RewardRepository {
                     orderReward.count != 0
                 }
             }
+    }
+
+    fun addReward(reward: Reward) {
+        orderRewards.add(OrderReward(reward, 0))
     }
 
     companion object {

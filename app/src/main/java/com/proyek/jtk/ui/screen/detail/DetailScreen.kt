@@ -1,5 +1,6 @@
 package com.proyek.jtk.ui.screen.detail
 
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import com.proyek.jtk.R
 import com.proyek.jtk.di.Injection
 import com.proyek.jtk.ui.ViewModelFactory
@@ -51,7 +53,7 @@ fun DetailScreen(
             is UiState.Success -> {
                 val data = uiState.data
                 DetailContent(
-                    data.reward.image,
+                    data.reward.image, // Menggunakan Uri? untuk gambar
                     data.reward.title,
                     data.reward.requiredPoint,
                     data.count,
@@ -69,7 +71,7 @@ fun DetailScreen(
 
 @Composable
 fun DetailContent(
-    @DrawableRes image: Int,
+    image: Uri?, // Mengubah parameter image menjadi Uri?
     title: String,
     basePoint: Int,
     count: Int,
@@ -77,7 +79,6 @@ fun DetailContent(
     onAddToCart: (count: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     var totalPoint by rememberSaveable { mutableStateOf(0) }
     var orderCount by rememberSaveable { mutableStateOf(count) }
 
@@ -88,14 +89,27 @@ fun DetailContent(
                 .weight(1f)
         ) {
             Box {
-                Image(
-                    painter = painterResource(image),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier.height(400.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-                )
+                // Memuat gambar dari Uri menggunakan rememberImagePainter
+                image?.let {
+                    Image(
+                        painter = rememberImagePainter(it),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier.height(400.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
+                    )
+                } ?: run {
+                    // Gambar default jika imageUri null
+                    Image(
+                        painter = painterResource(R.drawable.reward_13),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier.height(400.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.back),
@@ -155,10 +169,10 @@ fun DetailContent(
 fun DetailContentPreview() {
     JTKTheme {
         DetailContent(
-            R.drawable.reward_13,
-            "Sepeda Oke",
-            100,
-            1,
+            image = Uri.parse("android.resource://com.proyek.jtk/drawable/reward_13"), // Contoh URI
+            title = "Sepeda Oke",
+            basePoint = 100,
+            count = 1,
             onBackClick = {},
             onAddToCart = {}
         )

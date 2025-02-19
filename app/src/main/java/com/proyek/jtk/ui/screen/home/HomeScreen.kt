@@ -62,10 +62,12 @@ fun HomeContent(
         modifier = modifier
     ) {
         items(orderReward) { data ->
+            // Mengirimkan imageUri dan description
             RewardItem(
-                image = data.reward.image,
+                imageUri = data.reward.image, // Mengirimkan Uri gambar
                 title = data.reward.title,
                 requiredPoint = data.reward.requiredPoint,
+                description = data.reward.description, // Mengirimkan deskripsi
                 modifier = Modifier.clickable {
                     navigateToDetail(data.reward.id)
                 }

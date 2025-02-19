@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
@@ -22,8 +23,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.proyek.jtk.data.RewardRepository
 import com.proyek.jtk.ui.navigation.NavigationItem
 import com.proyek.jtk.ui.navigation.Screen
+import com.proyek.jtk.ui.screen.add.AddItemScreen
 import com.proyek.jtk.ui.screen.cart.CartScreen
 import com.proyek.jtk.ui.screen.detail.DetailScreen
 import com.proyek.jtk.ui.screen.home.HomeScreen
@@ -63,6 +66,15 @@ fun JTKApp(
                 CartScreen(
                     onOrderButtonClicked = { message ->
                         shareOrder(context, message)
+                    }
+                )
+            }
+            composable(Screen.AddItem.route) {
+                AddItemScreen(
+                    navigateBack = { navController.navigateUp() },
+                    navigateToHome = { navController.navigate(Screen.Home.route) },
+                    addReward = { reward ->
+                        RewardRepository.getInstance().addReward(reward)
                     }
                 )
             }
@@ -130,6 +142,11 @@ private fun BottomBar(
                 title = stringResource(R.string.menu_cart),
                 icon = Icons.Default.ShoppingCart,
                 screen = Screen.Cart
+            ),
+            NavigationItem(
+                title = stringResource(R.string.add_item),
+                icon = Icons.Default.Add,
+                screen = Screen.AddItem
             ),
             NavigationItem(
                 title = stringResource(R.string.menu_profile),

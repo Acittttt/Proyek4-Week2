@@ -1,5 +1,6 @@
 package com.proyek.jtk.ui.components
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.proyek.jtk.R
 import com.proyek.jtk.ui.theme.JTKTheme
 import com.proyek.jtk.ui.theme.Shapes
@@ -25,7 +27,7 @@ import com.proyek.jtk.ui.theme.Shapes
 @Composable
 fun CartItem(
     rewardId: Long,
-    image: Int,
+    image: Uri?, // Mengubah image menjadi Uri? (bukan Int lagi)
     title: String,
     totalPoint: Int,
     count: Int,
@@ -35,14 +37,27 @@ fun CartItem(
     Row(
         modifier = modifier.fillMaxWidth()
     ) {
-        Image(
-            painter = painterResource(image),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(90.dp)
-                .clip(Shapes.small)
-        )
+        // Menggunakan rememberImagePainter untuk memuat gambar dari Uri
+        image?.let {
+            Image(
+                painter = rememberImagePainter(it), // Menggunakan rememberImagePainter untuk URI
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(90.dp)
+                    .clip(Shapes.small)
+            )
+        } ?: run {
+            // Jika image adalah null, gunakan gambar default
+            Image(
+                painter = rememberImagePainter(R.drawable.reward_13), // Gambar default jika Uri null
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(90.dp)
+                    .clip(Shapes.small)
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,10 +73,7 @@ fun CartItem(
                 )
             )
             Text(
-                text = stringResource(
-                    R.string.required_point,
-                    totalPoint
-                ),
+                text = "Points: $totalPoint", // Menampilkan poin
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleSmall,
             )
@@ -79,10 +91,13 @@ fun CartItem(
 @Composable
 @Preview(showBackground = true)
 fun CartItemPreview() {
-    JTKTheme {
-        CartItem(
-            4, R.drawable.reward_13, "Sepeda JTK", 4000, 0,
-            onProductCountChanged = { rewardId, count -> },
-        )
-    }
+    // Menyediakan preview dengan contoh Uri dan data
+    CartItem(
+        rewardId = 4,
+        image = Uri.parse("android.resource://com.proyek.jtk/drawable/reward_13"), // Contoh URI
+        title = "Sepeda JTK",
+        totalPoint = 4000,
+        count = 0,
+        onProductCountChanged = { rewardId, count -> }
+    )
 }
